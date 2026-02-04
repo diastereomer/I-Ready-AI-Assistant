@@ -1,0 +1,8 @@
+{
+  "name": "I-Ready AI Tutor Architectures",
+  "description": "An interactive showcase of architectural approaches for adding a Socratic AI assistant to educational platforms like I-Ready, featuring live Gemini-powered tutoring simulations.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

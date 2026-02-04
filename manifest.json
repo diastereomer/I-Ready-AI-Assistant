@@ -1,0 +1,23 @@
+
+{
+  "manifest_version": 3,
+  "name": "I-Ready AI Vision Assistant",
+  "version": "1.0.0",
+  "description": "Multimodal Socratic Tutor for I-Ready learning sessions.",
+  "permissions": [
+    "sidePanel",
+    "tabs",
+    "scripting",
+    "activeTab",
+    "desktopCapture"
+  ],
+  "action": {
+    "default_title": "Open AI Tutor"
+  },
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "host_permissions": [
+    "https://*.i-ready.com/*"
+  ]
+}
