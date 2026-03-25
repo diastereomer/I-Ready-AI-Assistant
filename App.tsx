@@ -7,13 +7,12 @@ import TutorSidebar from './components/TutorSidebar';
 import VisionSimulation from './components/VisionSimulation';
 
 const App: React.FC = () => {
-  const [activeArch, setActiveArch] = useState<ArchitectureType>(ArchitectureType.MULTIMODAL_VISION);
+  const activeArch = ArchitectureType.MULTIMODAL_VISION;
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
   const currentProblem = MOCK_PROBLEMS[currentProblemIndex];
 
   const handleAnswer = (val: string) => {
-    // Basic logic for the demo: Problem 'g1' is the triangle (c=5)
-    const isCorrect = currentProblem.id === 'g1' ? val === '5' : (val === '8' || val === '11');
+    const isCorrect = val.trim() === currentProblem.correctAnswer;
     
     if (isCorrect) {
       alert("🎉 Great job! You solved it.");

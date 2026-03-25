@@ -23,6 +23,7 @@ export interface Problem {
   id: string;
   subject: 'Math' | 'Reading';
   question: string;
+  correctAnswer: string;
   context: string;
   shapes?: GeometryShape[];
   difficulty: 'Easy' | 'Medium' | 'Hard';

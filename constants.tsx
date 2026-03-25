@@ -45,6 +45,7 @@ export const MOCK_PROBLEMS: Problem[] = [
     id: "g1",
     subject: "Math",
     question: "Look at the triangle below. If the side labeled 'a' is 3cm and 'b' is 4cm, what is the length of the longest side 'c'?",
+    correctAnswer: "5",
     context: "Pythagorean Theorem and right-angle triangle identification.",
     difficulty: "Hard",
     shapes: [
@@ -55,6 +56,7 @@ export const MOCK_PROBLEMS: Problem[] = [
     id: "m1",
     subject: "Math",
     question: "If Sally has 12 apples and gives 4 to her friend, how many apples does she have left?",
+    correctAnswer: "8",
     context: "Basic arithmetic.",
     difficulty: "Medium"
   }

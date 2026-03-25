@@ -10,22 +10,25 @@ const VisionSimulation: React.FC<VisionSimulationProps> = ({ isActive }) => {
   const [showDetections, setShowDetections] = useState(false);
 
   useEffect(() => {
-    if (isActive) {
-      const interval = setInterval(() => {
-        setScanPos(prev => (prev + 1) % 100);
-      }, 30);
-      
-      // Periodically flicker "Detections" to simulate AI processing
-      const detectionInterval = setInterval(() => {
-        setShowDetections(true);
-        setTimeout(() => setShowDetections(false), 2000);
-      }, 5000);
-
-      return () => {
-        clearInterval(interval);
-        clearInterval(detectionInterval);
-      };
+    if (!isActive) {
+      setScanPos(0);
+      setShowDetections(false);
+      return;
     }
+
+    const interval = setInterval(() => {
+      setScanPos(prev => (prev + 1) % 100);
+    }, 30);
+
+    const detectionInterval = setInterval(() => {
+      setShowDetections(true);
+      setTimeout(() => setShowDetections(false), 2000);
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(detectionInterval);
+    };
   }, [isActive]);
 
   if (!isActive) return null;
