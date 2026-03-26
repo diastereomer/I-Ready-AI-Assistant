@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { defineConfig, loadEnv, type Plugin } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 
 function copyManifest(): Plugin {
@@ -15,8 +15,7 @@ function copyManifest(): Plugin {
   };
 }
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, '.', '');
+export default defineConfig(() => {
   return {
     server: {
       port: 3000,
@@ -24,8 +23,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [react(), copyManifest()],
     define: {
-      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      'process.env': '{}',
     },
     resolve: {
       alias: {
