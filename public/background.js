@@ -15,3 +15,13 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     chrome.sidePanel.open({ tabId });
   }
 });
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type === "captureTab") {
+    chrome.tabs
+      .captureVisibleTab(null, { format: "jpeg", quality: 85 })
+      .then((dataUrl) => sendResponse({ success: true, dataUrl }))
+      .catch((err) => sendResponse({ success: false, error: err.message }));
+    return true;
+  }
+});

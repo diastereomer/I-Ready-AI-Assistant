@@ -1,6 +1,26 @@
-
 import { GoogleGenAI, type Content, type Part } from "@google/genai";
-import { Message, Problem } from "../types";
+import { Message } from "../types";
+
+const SYSTEM_PROMPT = `You are the "I-Ready AI Vision Assistant", a Socratic tutor for K-12 students.
+
+YOUR JOB:
+- When given a screenshot of an I-Ready lesson, identify the question being asked.
+- Explain the question in simple, friendly language a 5th grader can understand.
+- Guide the student toward understanding the concept — use hints and leading questions.
+- NEVER give the direct answer. NEVER solve the problem for them.
+
+WHEN ANALYZING A SCREENSHOT:
+- Describe what you see: diagrams, shapes, numbers, answer choices.
+- Identify the specific question or task the student needs to complete.
+- Break down any unfamiliar words or concepts.
+- If there's a diagram (triangle, number line, graph, etc.), describe its key features.
+
+TONE:
+- Warm, encouraging, patient.
+- Use short sentences. Aim for 2-4 sentences per response.
+- Celebrate effort, not just correctness.
+
+CRITICAL RULE: You MUST NOT reveal answers, solutions, or which answer choice is correct.`;
 
 function extractBase64Data(dataUri: string): string | undefined {
   const commaIndex = dataUri.indexOf(',');
@@ -10,29 +30,17 @@ function extractBase64Data(dataUri: string): string | undefined {
 }
 
 export class GeminiService {
-  async getTutorResponse(history: Message[], problem: Problem, userMessage: string, screenshotData?: string): Promise<string> {
+  async getTutorResponse(
+    history: Message[],
+    userMessage: string,
+    screenshotData?: string,
+  ): Promise<string> {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-      const systemInstruction = `
-        You are the "I-Ready AI Vision Assistant". 
-        Role: Socratic Tutor for K-12 students.
-        Goal: Help students solve geometry and math problems without giving answers.
-        
-        VISUAL REASONING RULES:
-        1. If a screenshot is provided, refer to colors and shapes (e.g., "the blue triangle", "the side labeled 'c'").
-        2. Ask questions that lead them to discover the formula or relationship.
-        3. Keep language extremely simple (5th-grade level).
-        4. Max 30 words per response.
-        
-        Current Context:
-        Problem: ${problem.question}
-        Subject: ${problem.subject}
-      `;
-
       const contents: Content[] = history.map(m => ({
-        role: m.role === 'system' ? 'user' : m.role,
-        parts: [{ text: m.text }]
+        role: m.role,
+        parts: [{ text: m.text }],
       }));
 
       const currentParts: Part[] = [{ text: userMessage }];
@@ -44,30 +52,26 @@ export class GeminiService {
             inlineData: {
               mimeType: "image/jpeg",
               data: base64,
-            }
+            },
           });
-          currentParts.push({ text: "I am looking at your I-Ready screen now. I see the diagram clearly." });
         }
       }
 
-      contents.push({
-        role: 'user',
-        parts: currentParts
-      });
+      contents.push({ role: 'user', parts: currentParts });
 
       const response = await ai.models.generateContent({
-        model: screenshotData ? 'gemini-2.5-flash-image' : 'gemini-3-flash-preview',
+        model: 'gemini-2.5-flash',
         contents,
         config: {
-          systemInstruction,
+          systemInstruction: SYSTEM_PROMPT,
           temperature: 0.7,
-        }
+        },
       });
 
-      return response.text ?? "I'm here to help! What do you notice first about the shape on your screen?";
+      return response.text ?? "Hmm, I couldn't quite read the screen. Could you try capturing it again?";
     } catch (error) {
       console.error("Gemini API Error:", error);
-      return "I'm having a little trouble seeing the screen. Can you tell me what the problem says?";
+      return "I'm having trouble connecting right now. Try again in a moment!";
     }
   }
 }
