@@ -2,15 +2,19 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Message } from '../types';
 import { geminiService } from '../services/geminiService';
 
-async function captureTab(): Promise<string | null> {
+interface CaptureResult {
+  dataUrl: string | null;
+  error: string | null;
+}
+
+async function captureTab(): Promise<CaptureResult> {
   try {
     const response = await chrome.runtime.sendMessage({ type: 'captureTab' });
-    if (response?.success) return response.dataUrl;
-    console.error('Capture failed:', response?.error);
-    return null;
+    if (response?.success) return { dataUrl: response.dataUrl, error: null };
+    return { dataUrl: null, error: response?.error ?? 'Unknown capture error' };
   } catch (err) {
-    console.error('Could not capture tab:', err);
-    return null;
+    const msg = err instanceof Error ? err.message : String(err);
+    return { dataUrl: null, error: msg };
   }
 }
 
@@ -38,13 +42,13 @@ const TutorSidebar: React.FC = () => {
 
     setIsLoading(true);
 
-    const screenshot = await captureTab();
+    const { dataUrl: screenshot, error } = await captureTab();
     if (!screenshot) {
       setMessages(prev => [
         ...prev,
         {
           role: 'model',
-          text: "I couldn't capture the screen. Make sure you're on an I-Ready page and try again.",
+          text: `I couldn't capture the screen: ${error}. Make sure a webpage is open in the active tab and try again.`,
           timestamp: new Date(),
         },
       ]);
