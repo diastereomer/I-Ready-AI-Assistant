@@ -35,7 +35,7 @@
   "oauth2": {
     "client_id": "YOUR_CLIENT_ID.apps.googleusercontent.com",
     "scopes": [
-      "https://www.googleapis.com/auth/generative-language"
+      "https://www.googleapis.com/auth/generativelanguage"
     ]
   },
   "content_security_policy": {
